@@ -1,0 +1,49 @@
+/**
+ * recover.c
+ *
+ * Computer Science 50
+ * Problem Set 5
+ *
+ * Recovers JPEGs from a forensic image.
+ */
+#include<stdio.h>
+#include<stdint.h>
+typedef uint8_t  BYTE;
+
+typedef struct 
+{
+    BYTE s[512];
+    
+}data;
+
+int main(int argc, char* argv[])
+{
+    data data1;
+    FILE* inptr1 = fopen("card.raw", "r");
+    int num=0;
+    FILE* img;
+   
+    
+    while(fread(&data1,sizeof(data1),1,inptr1)==1)
+    {
+   
+        
+    if(data1.s[0]==0xff && data1.s[1]==0xd8 && data1.s[2]==0xff && (data1.s[3]==0xe0 || data1.s[3]==0xe1))
+        {  
+           if(img!=NULL)
+           fclose(img);    
+           char title[7];
+           int k=num%10;
+           int num1=(num/10)%10;
+           sprintf(title,"0%d%d.jpg",num1,k);
+           img=fopen(title,"a");
+           fwrite(&data1,sizeof(data1),1,img);    
+           num=num+1;
+           continue;
+        }
+        if(img!=NULL)
+        fwrite(&data1,sizeof(data1),1,img);
+    }
+    fclose(inptr1);  
+    return 0;   
+}
